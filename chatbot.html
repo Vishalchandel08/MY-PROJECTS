@@ -7,50 +7,65 @@
 <style>
    body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      background: linear-gradient(135deg, #eef4ff, #f8fbff);
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
    }
 
    .js-container {
-      max-width: 500px;
-      margin: 40px auto;
+      width: min(560px, 92vw);
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      padding: 15px;
+      border-radius: 16px;
+      box-shadow: 0 12px 35px rgba(20, 40, 80, 0.14);
+      overflow: hidden;
    }
 
-   .abc {
-      color: #007bff;
+   .chat-header {
+      background: #0b63f6;
+      color: #fff;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 16px;
    }
 
 
    .chat-area {
-      height: 400px;
+      height: 420px;
       overflow-y: auto;
-      padding: 10px;
+      padding: 14px;
+      background: #f8faff;
    }
 
 
    .chat-input {
       display: flex;
       gap: 10px;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
+      border-top: 1px solid #e5ebf5;
+      padding: 12px;
+      background: #fff;
    }
 
    .chat-input input {
       flex: 1;
       padding: 10px;
       border-radius: 20px;
-      border: 1px solid #ccc;
+      border: 1px solid #c9d8f3;
       outline: none;
       font-size: 14px;
+      background: #fdfefe;
+   }
+
+   .chat-input input:focus {
+      border-color: #0b63f6;
+      box-shadow: 0 0 0 3px rgba(11, 99, 246, 0.16);
    }
 
    .chat-input button {
-      background: #007bff;
+      background: #0b63f6;
       color: white;
       border: none;
       padding: 10px 16px;
@@ -60,12 +75,13 @@
    }
 
    .chat-input button:hover {
-      background: #0056b3;
+      background: #084ec2;
    }
 
    .message-row {
       display: flex;
       align-items: center;
+      gap: 8px;
       margin: 10px 0;
    }
 
@@ -84,25 +100,38 @@
       max-width: 70%;
       font-size: 14px;
       line-height: 1.4;
+      box-shadow: 0 2px 8px rgba(12, 25, 54, 0.07);
    }
 
 
    .robot .message-bubble {
-      background: #e9f3ff;
-      color: #333;
+      background: #eaf2ff;
+      color: #1f2a44;
    }
 
    .user .message-bubble {
-      background: #007bff;
+      background: #0b63f6;
       color: white;
    }
 
-
-   .message-row img {
+   .avatar {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      margin: 0 8px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex: 0 0 36px;
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+   }
+
+   .robot-avatar {
+      background: linear-gradient(135deg, #4f8df7, #2259d0);
+   }
+
+   .user-avatar {
+      background: linear-gradient(135deg, #11b47b, #0a8f62);
    }
 </style>
 
@@ -118,12 +147,20 @@
 
       function getRobotReply(userMessage) {
          const msg = userMessage.toLowerCase();
-         if (msg.includes('raman')) {
-            return 'raman is gandu'
-         }
-
          if (msg.includes('hi') || msg.includes('hello')) {
             return 'Hello! How can I help you today?';
+         }
+
+         if (msg.includes('how are you')) {
+            return "I'm doing great 🤖 Thanks for asking!";
+         }
+
+         if (msg.includes('your name') || msg.includes('who are you')) {
+            return "I'm RoboBuddy, your simple chat assistant.";
+         }
+
+         if (msg.includes('help')) {
+            return 'Try: hi, date, time, flip coin, joke, quote, or thanks.';
          }
 
          if (msg.includes('date')) {
@@ -139,7 +176,33 @@
             return '🪙 Coin flip result: ' + result;
          }
 
-         return "I'm a simple chatbot. Try saying hi, date, time, or flip a coin 🙂";
+         if (msg.includes('joke')) {
+            const jokes = [
+               'Why do programmers prefer dark mode? Because light attracts bugs! 😄',
+               'I would tell you a UDP joke, but you might not get it.',
+               'Why did the developer go broke? Because they used up all their cache.'
+            ];
+            return jokes[Math.floor(Math.random() * jokes.length)];
+         }
+
+         if (msg.includes('quote') || msg.includes('motivate')) {
+            const quotes = [
+               'Small progress each day adds up to big results.',
+               'Done is better than perfect.',
+               'Keep going. Every line of code makes you better.'
+            ];
+            return '💡 ' + quotes[Math.floor(Math.random() * quotes.length)];
+         }
+
+         if (msg.includes('thank')) {
+            return "You're welcome! Happy to help 😊";
+         }
+
+         if (msg.includes('bye')) {
+            return 'Goodbye 👋 Have a great day!';
+         }
+
+         return "I didn't catch that. Try: help, date, time, flip a coin, joke, or quote 🙂";
       }
 
 
@@ -188,13 +251,13 @@
          return (
             <div className={`message-row ${sender}`}>
 
-               {sender === 'robot' && <img src="bg.jpg" />}
+               {sender === 'robot' && <div className="avatar robot-avatar">🤖</div>}
 
                <div className="message-bubble">
                   {message}
                </div>
 
-               {sender === 'user' && <img src="kbc.jpg" />}
+               {sender === 'user' && <div className="avatar user-avatar">🙂</div>}
 
             </div>
          );
@@ -289,15 +352,17 @@
 
          return (
             <>
-               <ChatInput
-                  chatMessages={chatMessages}
-                  setChatMessages={setChatMessages}
-               />
+               <div className="chat-header">🤖 Chat Assistant</div>
 
                <ChatMessages
                   chatMessages={chatMessages}
                />
-                {/* <DemoFunctions /> */}
+
+               <ChatInput
+                  chatMessages={chatMessages}
+                  setChatMessages={setChatMessages}
+               />
+               {/* <DemoFunctions /> */}
                
             </>
 
